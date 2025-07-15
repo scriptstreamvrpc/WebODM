@@ -1,0 +1,28 @@
+# This configuration does not include a processing node
+# Which makes for faster setup times
+# custom by RnD for mounting volume host folder after install using start.sh (default volume data inside container)
+version: '2.1'
+volumes:
+  dbdata:
+  appmedia:
+services:
+  webapp:
+    image: opendronemap/webodm_webapp
+    container_name: webapp_staging
+    entrypoint: /bin/bash -c "service cron start && chmod +x /webodm/*.sh && /bin/bash -c \"/webodm/wait-for-postgres.sh db /webodm/wait-for-it.sh -t 0 broker:6379 -- /webodm/start.sh\""
+    volumes:
+      - /home/backup_webodm/media:/webodm/app/media:z
+    ports:
+      - "8000:8000"
+    environment:
+      - WO_PORT
+      - WO_HOST
+      - WO_DEBUG
+      - WO_BROKER
+      - WO_DEV
+      - WO_DEV_WATCH_PLUGINS
+      - WO_SECRET_KEY
+      - WEB_CONCURRENCY
+    restart: unless-stopped
+    oom_score_adj: 0
+  

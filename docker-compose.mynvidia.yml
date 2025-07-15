@@ -1,0 +1,22 @@
+version: '2.1'
+services:
+  node-gpu:
+    image: opendronemap/nodeodm:gpu
+    container_name: node-gpu
+    ports:
+      - 3001:3000
+    restart: unless-stopped
+    oom_score_adj: 500
+    networks:
+      - webodm_default
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+networks:
+  webodm_default:
+    external: true
